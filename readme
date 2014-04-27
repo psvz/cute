@@ -22,7 +22,7 @@ root@ubuntu:~/cute# ip addr show eth0
        valid_lft forever preferred_lft forever
 root@ubuntu:~/cute#
 
-"eth0" in this case can be ased as [if name]
+"eth0" in this case can be used as [if name]
 
 Initially, UDP stream is stored in a file in the current working folder from which the tool is run.
 The file name is formed as "YYYYMMDDhhmmss.ts" representing the timestamp of creation, e.g.
