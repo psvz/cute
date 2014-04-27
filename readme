@@ -1,0 +1,48 @@
+CUPTURE TERMINAL (cute) (c) 2014 BCi Digital, Vitaly Zuevsky
+
+Compiled for:
+Linux ubuntu 3.8.0-29-generic #42~precise1-Ubuntu SMP Wed Aug 14 15:31:16 UTC 2013 i686 i686 i386 GNU/Linux
+
+The tool captures UDP multicast or unicast, dumps it to file(s) seamlessly at
+the application layer, and provides operational timestamps. Usage:
+
+./cute <MCast GRP> <UDP port> <dump location> [if name]
+
+In case of unicast, <MCast GRP> is the IP address of the receiving interface.
+In case of multicast, machine's global routing table guides which receiving
+interface will be used, therefore, appropriate static route must exist.
+Alternatively, putting the interface explicitly as [if name] waives
+necessity of taking care of global routing table. For example:
+
+root@ubuntu:~/cute# ip addr show eth0
+3: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:6a:b2:59 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.23.128/24 brd 192.168.23.255 scope global eth0
+    inet6 fe80::20c:29ff:fe6a:b259/64 scope link
+       valid_lft forever preferred_lft forever
+root@ubuntu:~/cute#
+
+"eth0" in this case can be ased as [if name]
+
+Initially, UDP stream is stored in a file in the current working folder from which the tool is run.
+The file name is formed as "YYYYMMDDhhmmss.ts" representing the timestamp of creation, e.g.
+
+root@ubuntu:~/cute# ls
+20140413175220.ts  Makefile  cute  cute.c  cute.o
+root@ubuntu:~/cute#
+
+When the tool receives HUP signal, e.g.
+
+root@ubuntu:~/cute# killall -HUP cute
+
+the current .ts file is erased and the new file (with the timestamp of NOW) receives ongoing UDP stream.
+
+When the tool receives TERM signal, e.g.
+
+root@ubuntu:~/cute# killall -TERM cute
+
+the current file is moved to <dump location> folder, while the new file (with the timestamp of NOW)
+in the current folder takes over the storage of the UDP stream seamlessly. <dump location> can be NFS
+volume or the like since the moving process is a separate thread that would not affect capture.
+
+This functionality allows flexible slicing of continuous UDP stream.
